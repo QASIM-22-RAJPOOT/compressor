@@ -1,0 +1,10 @@
+import { useState } from 'react'
+import Icon from './Icon'
+import { formatSize } from '../lib/images'
+export default function Comparison({ source, result, busy }) {
+  const [position, setPosition] = useState(50)
+  const reduction = result ? (1 - result.blob.size / source.file.size) * 100 : 0
+  return <section className="card comparison" aria-live="polite"><div className="comparison-heading"><div><h2>Small in size. Big on detail.</h2><p>See the difference. Or rather, don’t.</p></div><span className="before-after-tag">Before & after</span></div>
+    {result ? <><div className="compare-image"><img src={result.url} alt="Compressed result"/><div className="original-overlay" style={{ clipPath: `inset(0 ${100-position}% 0 0)` }}><img src={source.url} alt="Original image"/></div><span className="image-label left">Original · {formatSize(source.file.size)}</span><span className="image-label right">Compressed · {formatSize(result.blob.size)}</span><div className="compare-line" style={{ left: `${position}%` }}><span>‹ ›</span></div><input type="range" min="0" max="100" value={position} onChange={e => setPosition(+e.target.value)} aria-label="Before and after comparison position"/></div><div className="result-footer"><div><strong className={reduction >= 0 ? 'text-emerald-700' : 'text-amber-700'}>{Math.abs(reduction).toFixed(1)}% {reduction >= 0 ? 'smaller' : 'larger'}</strong><p>{reduction >= 0 ? 'Ready for a lighter, faster web.' : 'Try a lower quality or smaller dimensions.'} · {result.width} × {result.height} px</p></div><a className="primary" href={result.url} download={result.name}><Icon name="download" size={17}/>Download image</a></div></> : <div className="comparison-empty"><div className={`comparison-symbol ${busy ? 'processing' : ''}`}><Icon name="image" size={26}/><span/><Icon name="image" size={26}/></div><p>{busy ? 'Giving your image a lighter footprint…' : 'Your before & after comparison will appear here'}</p><span>{busy ? 'Resizing and encoding securely in your browser' : 'Upload an image and let the little details shine.'}</span>{busy && <div className="progress-track"><div/></div>}</div>}
+  </section>
+}
